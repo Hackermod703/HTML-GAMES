@@ -7,11 +7,14 @@ let direction = { x: 1, y: 0 };
 let food = spawnFood();
 let gameOver = false;
 
+// Listen for arrow key inputs
 document.addEventListener("keydown", changeDirection);
 
 function gameLoop() {
   if (gameOver) {
-    alert("Game Over!");
+    if (confirm("Game Over! Restart?")) {
+      restartGame();
+    }
     return;
   }
   update();
@@ -21,28 +24,55 @@ function gameLoop() {
 
 function update() {
   const head = { ...snake[0] };
+
+  // Update the head's position based on direction
   head.x += direction.x * gridSize;
   head.y += direction.y * gridSize;
 
-  if (head.x < 0 || head.y < 0 || head.x >= canvas.width || head.y >= canvas.height || snake.some(seg => seg.x === head.x && seg.y === head.y)) {
+  // Wall wrapping: Bring the snake to the opposite side if it crosses the canvas boundary
+  if (head.x < 0) head.x = canvas.width - gridSize;
+  if (head.y < 0) head.y = canvas.height - gridSize;
+  if (head.x >= canvas.width) head.x = 0;
+  if (head.y >= canvas.height) head.y = 0;
+
+  // Check for self-collision
+  if (snake.some(segment => segment.x === head.x && segment.y === head.y)) {
     gameOver = true;
+    return;
+  }
+
+  // Add new head to the snake
+  snake.unshift(head);
+
+  // Check if the snake eats food
+  if (head.x === food.x && head.y === food.y) {
+    food = spawnFood(); // Respawn food
   } else {
-    snake.unshift(head);
-    if (head.x === food.x && head.y === food.y) {
-      food = spawnFood();
-    } else {
-      snake.pop();
-    }
+    snake.pop(); // Remove the tail if no food is eaten
   }
 }
 
 function draw() {
+  // Clear the canvas
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  ctx.fillStyle = "green";
-  snake.forEach(segment => ctx.fillRect(segment.x, segment.y, gridSize, gridSize));
 
+  // Draw the snake
+  ctx.fillStyle = "green";
+  snake.forEach(segment => {
+    ctx.fillRect(segment.x, segment.y, gridSize, gridSize);
+  });
+
+  // Draw the food (red dot)
   ctx.fillStyle = "red";
-  ctx.fillRect(food.x, food.y, gridSize, gridSize);
+  ctx.beginPath();
+  ctx.arc(
+    food.x + gridSize / 2,
+    food.y + gridSize / 2,
+    gridSize / 2,
+    0,
+    Math.PI * 2
+  );
+  ctx.fill();
 }
 
 function changeDirection(event) {
@@ -60,4 +90,13 @@ function spawnFood() {
   };
 }
 
+function restartGame() {
+  snake = [{ x: gridSize, y: gridSize }];
+  direction = { x: 1, y: 0 };
+  food = spawnFood();
+  gameOver = false;
+  gameLoop();
+}
+
+// Start the game loop
 gameLoop();
