@@ -4,13 +4,26 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Snake Game</title>
-  <link rel="stylesheet" href="../css/snake-game.css">
+  <link rel="stylesheet" href="snake-game.css">
 </head>
 <body>
   <h1>Snake Game</h1>
+  <div id="score-container">
+    <span>Score: <span id="score">0</span></span>
+  </div>
   <canvas id="game-canvas" width="400" height="400"></canvas>
-  <p>Use the Arrow Keys to move and eat the red apples to grow bigger!</p>
-  <a href="../index.html">Back to Home</a>
-  <script src="../js/snake-game.js"></script>
+  
+  <div class="mobile-controls">
+    <button class="control" id="up">↑</button>
+    <div class="horizontal-controls">
+      <button class="control" id="left">←</button>
+      <button class="control" id="right">→</button>
+    </div>
+    <button class="control" id="down">↓</button>
+  </div>
+  
+  <p>Use the arrow keys or on-screen controls to move. Eat the red apples to grow! The game ends when you collide with yourself.</p>
+  
+  <script src="snake-game.js"></script>
 </body>
 </html>
